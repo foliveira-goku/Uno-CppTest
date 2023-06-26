@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <functional>
+#include <string>
 
 namespace Card
 {
@@ -25,6 +26,7 @@ namespace Card
 		Card(const int Number, const Color Color, const Type CardType);
 		const Color GetColor() const;
 		const int GetNumber() const;
+		const Type GetType() const;
 		void TryProcessAction();
 	};
 }

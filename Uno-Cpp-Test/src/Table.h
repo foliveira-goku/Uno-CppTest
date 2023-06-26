@@ -21,7 +21,8 @@ public:
 	void CreateColoredCards(Card::Color Color);
 	void CreateNumericCards(Card::Color Color);
 	void CreateCardAndAddToDeck(const int& Amount, const int& Number, Card::Color Color, Card::Type Type);
-	Card::Card* BuyCardFromDeck();
+	std::shared_ptr<Card::Card> BuyCardFromDeck();
+	std::vector<std::shared_ptr<Card::Card>> GetNewHandOfCards();
 	void DiscardCard(const Card::Card& CardToDiscard) const;
 };
 
