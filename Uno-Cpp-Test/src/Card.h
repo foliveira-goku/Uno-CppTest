@@ -28,5 +28,6 @@ namespace Card
 		const int GetNumber() const;
 		const Type GetType() const;
 		void TryProcessAction();
+		std::string GetInfo() const;
 	};
 }

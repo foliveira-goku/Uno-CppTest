@@ -1,4 +1,5 @@
 #include "Card.h"
+#include "CardHelper.h"
 
 namespace Card
 {
@@ -21,50 +22,12 @@ namespace Card
 
 	void Card::TryProcessAction() {	}
 
-	std::ostream& operator<<(std::ostream& os, const Type& value)
+	std::string Card::GetInfo() const
 	{
-		switch (value)
-		{
-		case Type::Number:
-			os << "Number";
-			break;
-		case Type::PlusTwo:
-			os << "+2";
-			break;
-		case Type::Reverse:
-			os << "Reverse";
-			break;
-		case Type::Jump:
-			os << "Jump";
-			break;
-		}
-		return os;
+		if (GetNumber() < 0)
+			return Type_ToString(cardType) + " " + Color_ToString(color);
+
+		return Type_ToString(cardType) + " " + std::to_string(number) + " " + Color_ToString(color) ;
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Color& value)
-	{
-		switch (value)
-		{
-		case Color::Blue:
-			std::cout << "\033[" << 34 << "m";
-			os << "Blue";
-			break;
-		case Color::Red:
-			std::cout << "\033[" << 31 << "m";
-			os << "Red";
-			break;
-		case Color::Yellow:
-			std::cout << "\033[" << 33 << "m";
-			os << "Yellow";
-			break;
-		case Color::Green:
-			std::cout << "\033[" << 32 << "m";
-			os << "Green";
-			break;
-		}
-
-		std::cout << "\033[" << 0 << "m";
-
-		return os;
-	}
 }

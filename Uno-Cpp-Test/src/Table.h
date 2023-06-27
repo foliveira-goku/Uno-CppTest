@@ -20,7 +20,6 @@ private:
 	const int NUMBER_OF_CARDS_IN_A_NEW_HAND = 7;
 public:
 	Table();
-	void CreateDeck();
 	void CreateColoredCards(Card::Color Color);
 	void CreateNumericCards(Card::Color Color);
 	void CreateCardAndAddToDeck(const int& Amount, const int& Number, Card::Color Color, Card::Type Type);
@@ -29,5 +28,8 @@ public:
 	void DiscardCard(const std::shared_ptr<Card::Card>& CardToDiscard);
 	void RetreiveCardsFromDiscardToDeck();
 	void ShuffleCards(std::vector<std::shared_ptr<Card::Card>>& CardsToShuffle);
+
+private:
+	void CreateDeck();
 };
 

@@ -138,6 +138,7 @@
     <ClCompile Include="src\Table.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CardHelper.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\InputReader.h" />
     <ClInclude Include="src\Card.h" />

@@ -4,6 +4,7 @@ Table::Table()
 {
 	deck.reserve(TOTAL_NUMBER_OF_CARDS);
 	discardPile.reserve(TOTAL_NUMBER_OF_CARDS);
+	CreateDeck();
 }
 
 void Table::CreateDeck()
