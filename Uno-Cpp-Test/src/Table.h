@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <random>
 
 #include "Card.h"
 
@@ -15,6 +17,7 @@ private:
 	const int TOTAL_PLUS_TWO_CARDS = 2;
 	const int TOTAL_REVERSE_CARDS = 2;
 	const int TOTAL_JUMP_CARDS = 2;
+	const int NUMBER_OF_CARDS_IN_A_NEW_HAND = 7;
 public:
 	Table();
 	void CreateDeck();
@@ -23,6 +26,8 @@ public:
 	void CreateCardAndAddToDeck(const int& Amount, const int& Number, Card::Color Color, Card::Type Type);
 	std::shared_ptr<Card::Card> BuyCardFromDeck();
 	std::vector<std::shared_ptr<Card::Card>> GetNewHandOfCards();
-	void DiscardCard(const Card::Card& CardToDiscard) const;
+	void DiscardCard(const std::shared_ptr<Card::Card>& CardToDiscard);
+	void RetreiveCardsFromDiscardToDeck();
+	void ShuffleCards(std::vector<std::shared_ptr<Card::Card>>& CardsToShuffle);
 };
 

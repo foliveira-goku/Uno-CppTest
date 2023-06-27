@@ -47,15 +47,31 @@ std::shared_ptr<Card::Card> Table::BuyCardFromDeck()
 std::vector<std::shared_ptr<Card::Card>> Table::GetNewHandOfCards()
 {
 	std::vector<std::shared_ptr<Card::Card>> handOfCards;
-	handOfCards.reserve(7);
+	handOfCards.reserve(NUMBER_OF_CARDS_IN_A_NEW_HAND);
 
-	for (size_t i = 0; i < 7; i++)
+	for (size_t i = 0; i < NUMBER_OF_CARDS_IN_A_NEW_HAND; i++)
 		handOfCards.emplace_back(BuyCardFromDeck());
 
 	return handOfCards;
 }
 
-void Table::DiscardCard(const Card::Card& CardToDiscard) const
+void Table::DiscardCard(const std::shared_ptr<Card::Card>& CardToDiscard)
 {
-	// add to discardPile vector
+	std::cout << "Discarting card: " << CardToDiscard;
+	discardPile.emplace_back(CardToDiscard);
+}
+
+void Table::RetreiveCardsFromDiscardToDeck()
+{
+	ShuffleCards(discardPile);
+	deck = discardPile;
+	discardPile.clear();
+}
+
+// TODO this could be in a random class
+void Table::ShuffleCards(std::vector<std::shared_ptr<Card::Card>>& CardsToShuffle)
+{
+	std::random_device randomDevice;
+	std::mt19937 generator(randomDevice());
+	std::shuffle(CardsToShuffle.begin(), CardsToShuffle.end(), randomDevice);
 }
