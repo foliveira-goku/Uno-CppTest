@@ -27,13 +27,13 @@ void Table::CreateColoredCards(Card::Color Color)
 
 void Table::CreateNumericCards(const Card::Color Color)
 {
-	for (size_t i = 0; i < TOTAL_NUMERIC_CARDS; i++)
+	for (int i = 0; i < TOTAL_NUMERIC_CARDS; i++)
 		CreateCardAndAddToDeck(2, i, Color, Card::Type::Number);
 }
 
 void Table::CreateCardAndAddToDeck(const int& Amount, const int& Number, Card::Color Color, Card::Type Type)
 {
-	for (size_t i = 0; i < Amount; i++)
+	for (int i = 0; i < Amount; i++)
 		deck.emplace_back(new Card::Card{ Number, Color, Type });
 }
 
@@ -50,7 +50,7 @@ std::vector<std::shared_ptr<Card::Card>> Table::GetNewHandOfCards()
 	std::vector<std::shared_ptr<Card::Card>> handOfCards;
 	handOfCards.reserve(NUMBER_OF_CARDS_IN_A_NEW_HAND);
 
-	for (size_t i = 0; i < NUMBER_OF_CARDS_IN_A_NEW_HAND; i++)
+	for (int i = 0; i < NUMBER_OF_CARDS_IN_A_NEW_HAND; i++)
 		handOfCards.emplace_back(BuyCardFromDeck());
 
 	return handOfCards;

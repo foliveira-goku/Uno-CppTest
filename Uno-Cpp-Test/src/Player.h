@@ -22,5 +22,6 @@ public:
 	const bool IsInUnoState() const;
 	void SetUnoState(const bool& IsInUnoState);
 	std::string GetAllCardsNames();
+	std::shared_ptr<Card::Card> DiscardCard(const int& cardIndex);
 };
 

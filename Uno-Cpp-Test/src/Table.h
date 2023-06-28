@@ -18,6 +18,7 @@ private:
 	const int TOTAL_REVERSE_CARDS = 2;
 	const int TOTAL_JUMP_CARDS = 2;
 	const int NUMBER_OF_CARDS_IN_A_NEW_HAND = 7;
+
 public:
 	Table();
 	void CreateColoredCards(Card::Color Color);

@@ -23,10 +23,10 @@ const int InputReader::GetAmountOfPlayers()
 	return playersAmount;
 }
 
-const std::string InputReader::GetPlayerName()
+const std::string InputReader::GetPlayerName(const int& PlayerId)
 {
 	std::string name;
-	std::cout << "Please tell me your name.\n";
+	std::cout << "Player " << PlayerId << "'s name:\n";
 	std::cin >> name;
 
 	return name;
