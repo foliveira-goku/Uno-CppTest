@@ -12,5 +12,6 @@ private:
 public:
 	const int GetAmountOfPlayers();
 	const std::string GetPlayerName(const int& PlayerId);
-	const int GetPlayerAction(const std::function<const int(std::string&)>& ActionOptions);
+	const int GetPlayerAction(const std::string& ActionsText, const int& AmountOfActions);
+	//const int GetPlayerAction(const std::function<const int(std::string&)>& ActionOptions);
 };

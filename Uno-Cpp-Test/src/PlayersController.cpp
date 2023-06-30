@@ -1,34 +1,84 @@
 #include "PlayersController.h"
 
 PlayersController::PlayersController(const int& AmountOfPlayers)
-{ players.reserve(AmountOfPlayers); }
+{
+	players.reserve(AmountOfPlayers);
+}
 
-void PlayersController::CreatePlayer(const std::string& Name, const int& ID, 
+void PlayersController::SetFunction_GetCurrentDiscardCard
+(const std::function<std::shared_ptr<Card::Card>& ()>& Function)
+{
+	getCurrentDiscardCardFunction = Function;
+}
+
+void PlayersController::CreatePlayer(const std::string& Name, const int& ID,
 	const std::vector<std::shared_ptr<Card::Card>>& Cards)
-{ players.emplace_back(new Player{ Name, ID, Cards }); }
+{
+	players.emplace_back(new Player{ Name, ID, Cards });
+}
 
 void PlayersController::ReservePlayersOrder() { std::reverse(players.begin(), players.end()); }
 
-const int PlayersController::GetPlayersCount() const {	return players.capacity(); }
+void PlayersController::NextTurn() { currentPlayerIndex = (currentPlayerIndex + 1) % players.size(); }
 
-const int PlayersController::GetPlayerPossibleOptions(std::string& ActionsText) const
+const std::string PlayersController::GetCurrentPlayerName() const
+{ 
+	return players[currentPlayerIndex]->GetName(); 
+}
+
+const int PlayersController::GetPlayersCount() const { return players.capacity(); }
+
+//TODO refactor this!
+const PlayerOptions PlayersController::GetPlayerPossibleOptions() const
 {
 	auto currentPlayer = players[currentPlayerIndex];
 	auto currentPlayerCards = currentPlayer->GetCards();
-	int cardsAmount = currentPlayerCards.size();
-	int optionsCount = cardsAmount;
+	PlayerOptions playerOptions{};
 
-	for (int i = 0; i < cardsAmount; i++)
-		ActionsText += "[" + std::to_string(i + 1) + "] " + currentPlayerCards[i]->GetInfo() + " ";
+	playerOptions.OptionsText = currentPlayer->GetInfo();
+	playerOptions.OptionsText += "\nChoose an option: \n";
 
-	optionsCount++;
-	ActionsText += "[" + std::to_string(optionsCount) + "] Buy a card.";
+	auto currentDiscardCard = getCurrentDiscardCardFunction();
+
+	for (int i = 0; i < currentPlayerCards.size(); i++)
+	{
+		// Compare cards
+		if (!AreCardsCompatible(currentDiscardCard, currentPlayerCards[i]))
+			continue;
+
+		playerOptions.PossibleCards.push_back(currentPlayerCards[i]);
+		playerOptions.OptionsCount++;
+		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] " + currentPlayerCards[i]->GetInfo() + " ";
+	}
+
+	playerOptions.OptionsCount++;
+	playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] Buy a card.";
 
 	if (currentPlayer->IsInUnoState())
 	{
-		optionsCount++;
-		ActionsText += "[" + std::to_string(optionsCount) + "] UNO!";
+		playerOptions.OptionsCount++;
+		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] UNO!";
 	}
 
-	return optionsCount;
+	return playerOptions;
+}
+
+bool PlayersController::AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardCard, std::shared_ptr<Card::Card>& OtherCard) const
+{
+	if (OtherCard->GetColor() == Card::Color::Black)
+		return true;
+
+	if (DiscardCard->GetColor() == OtherCard->GetColor())
+		return true;
+
+	if (DiscardCard->GetType() == OtherCard->GetType())
+	{
+		// Reminder: cards with NO number has a 'Number' value of -1, so this if works for them too.
+		if (DiscardCard->GetNumber() == OtherCard->GetNumber())
+			return true;
+
+		return false;
+	}
+
+	return false;
 }

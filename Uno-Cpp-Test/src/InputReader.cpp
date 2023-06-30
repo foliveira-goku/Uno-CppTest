@@ -32,18 +32,16 @@ const std::string InputReader::GetPlayerName(const int& PlayerId)
 	return name;
 }
 
-const int InputReader::GetPlayerAction(const std::function<const int(std::string&)>& GetActionOptions)
+const int InputReader::GetPlayerAction(const std::string& ActionsText, const int& AmountOfActions)
 {
-	std::string actionsText = "";
-	int amountOfActions = GetActionOptions(actionsText);
 	int actionInput = 0;
 
 	while (true)
 	{
-		std::cout << actionsText << "\n";
+		std::cout << ActionsText << "\n";
 		std::cin >> actionInput;
 
-		if (!std::cin.fail() && actionInput > 0 && actionInput <= amountOfActions)
+		if (!std::cin.fail() && actionInput > 0 && actionInput <= AmountOfActions)
 		{
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			return actionInput;

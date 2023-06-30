@@ -6,15 +6,11 @@ Player::Player(const std::string& Name, const int& ID, const std::vector<std::sh
 	std::cout << GetInfo() << "\n";
 }
 
-const std::string Player::GetName() const { return name; }
+const std::string Player::GetName() const { return "Player " + std::to_string(id) + "(" + name + ")"; }
 
 const std::vector<std::shared_ptr<Card::Card>>& Player::GetCards() const { return cards; }
 
-const std::string Player::GetInfo()
-{
-	return "Player " + std::to_string(id) + "(" + GetName() + ") " + "\n" +
-		"Cards:\n" + GetAllCardsNames();
-}
+const std::string Player::GetInfo() { return "\n" + GetName() + "\n" + "Cards:\n" + GetAllCardsNames(); }
 
 const bool Player::IsInUnoState() const { return isInUnoState; }
 

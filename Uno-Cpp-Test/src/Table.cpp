@@ -37,6 +37,12 @@ void Table::CreateCardAndAddToDeck(const int& Amount, const int& Number, Card::C
 		deck.emplace_back(new Card::Card{ Number, Color, Type });
 }
 
+void Table::DiscardFirstCard()
+{
+	std::shared_ptr<Card::Card> card = BuyCardFromDeck();
+	DiscardCard(card);
+}
+
 std::shared_ptr<Card::Card> Table::BuyCardFromDeck()
 {
 	int randomIndex = std::rand() % deck.size();
@@ -44,6 +50,9 @@ std::shared_ptr<Card::Card> Table::BuyCardFromDeck()
 	deck.erase(deck.begin() + randomIndex);
 	return chosenCard;
 }
+
+std::shared_ptr<Card::Card>& Table::GetCurrentDiscardCard()
+{ return discardPile[discardPile.size() - 1]; }
 
 std::vector<std::shared_ptr<Card::Card>> Table::GetNewHandOfCards()
 {
@@ -58,7 +67,7 @@ std::vector<std::shared_ptr<Card::Card>> Table::GetNewHandOfCards()
 
 void Table::DiscardCard(const std::shared_ptr<Card::Card>& CardToDiscard)
 {
-	std::cout << "Discarting card: " << CardToDiscard;
+	std::cout << "Discarting card: " << CardToDiscard->GetInfo() << "\n";
 	discardPile.emplace_back(CardToDiscard);
 }
 

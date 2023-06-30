@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include "InputReader.h"
 #include "PlayersController.h"
 #include "Table.h"
