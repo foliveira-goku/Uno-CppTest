@@ -19,7 +19,25 @@ void PlayersController::CreatePlayer(const std::string& Name, const int& ID,
 
 void PlayersController::ReservePlayersOrder() { std::reverse(players.begin(), players.end()); }
 
-void PlayersController::NextTurn() { currentPlayerIndex = (currentPlayerIndex + 1) % players.size(); }
+void PlayersController::GiveCardToCurrentPlayer(const std::shared_ptr<Card::Card> card)
+{
+	players[currentPlayerIndex]->ReceiveACard(card);
+}
+
+std::shared_ptr<Card::Card> PlayersController::GetDiscardCardFromCurrentPlayer(const int& CardId)
+{
+	return players[currentPlayerIndex]->GetDiscardCard(CardId);
+}
+
+void PlayersController::NextTurn() 
+{
+	currentPlayerIndex = GetNextPlayerIndex(); 
+}
+
+const std::shared_ptr<Player>& PlayersController::GetNextPlayer() const
+{
+	return players[GetNextPlayerIndex()];
+}
 
 const std::string PlayersController::GetCurrentPlayerName() const
 { 
@@ -29,7 +47,7 @@ const std::string PlayersController::GetCurrentPlayerName() const
 const int PlayersController::GetPlayersCount() const { return players.capacity(); }
 
 //TODO refactor this!
-const PlayerOptions PlayersController::GetPlayerPossibleOptions() const
+const PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBuyCard) const
 {
 	auto currentPlayer = players[currentPlayerIndex];
 	auto currentPlayerCards = currentPlayer->GetCards();
@@ -46,10 +64,13 @@ const PlayerOptions PlayersController::GetPlayerPossibleOptions() const
 		if (!AreCardsCompatible(currentDiscardCard, currentPlayerCards[i]))
 			continue;
 
-		playerOptions.PossibleCards.push_back(currentPlayerCards[i]);
+		playerOptions.PossibleCards.push_back({ currentPlayerCards[i]->GetId(), currentPlayerCards[i]->GetType() });
 		playerOptions.OptionsCount++;
 		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] " + currentPlayerCards[i]->GetInfo() + " ";
 	}
+
+	if (!CanBuyCard)
+		return playerOptions;
 
 	playerOptions.OptionsCount++;
 	playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] Buy a card.";
@@ -82,3 +103,5 @@ bool PlayersController::AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardC
 
 	return false;
 }
+
+int PlayersController::GetNextPlayerIndex() const {	return (currentPlayerIndex + 1) % players.size(); }

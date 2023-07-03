@@ -9,32 +9,35 @@ Table::Table()
 
 void Table::CreateDeck()
 {
-	CreateColoredCards(Card::Color::Blue);
-	CreateColoredCards(Card::Color::Red);
-	CreateColoredCards(Card::Color::Yellow);
-	CreateColoredCards(Card::Color::Green);
+	int currentId = 0 ;
+	CreateColoredCards(Card::Color::Blue, currentId);
+	CreateColoredCards(Card::Color::Red, currentId);
+	CreateColoredCards(Card::Color::Yellow, currentId);
+	CreateColoredCards(Card::Color::Green, currentId);
 
 	std::cout << "Deck created with " << deck.size() << " cards.\n";
 }
 
-void Table::CreateColoredCards(Card::Color Color)
+void Table::CreateColoredCards(Card::Color Color, int& Id)
 {
-	CreateNumericCards(Color);
-	CreateCardAndAddToDeck(TOTAL_PLUS_TWO_CARDS, -1, Color, Card::Type::PlusTwo);
-	CreateCardAndAddToDeck(TOTAL_REVERSE_CARDS, -1, Color, Card::Type::Reverse);
-	CreateCardAndAddToDeck(TOTAL_JUMP_CARDS, -1, Color, Card::Type::Jump);
+	//CreateNumericCards(Color, Id);
+	CreateCardAndAddToDeck( TOTAL_PLUS_TWO_CARDS, Id, -1, Color, Card::Type::PlusTwo);
+	CreateCardAndAddToDeck(TOTAL_REVERSE_CARDS, Id, -1, Color, Card::Type::Reverse);
+	CreateCardAndAddToDeck(TOTAL_JUMP_CARDS,Id, -1, Color, Card::Type::Jump);
 }
 
-void Table::CreateNumericCards(const Card::Color Color)
+void Table::CreateNumericCards(const Card::Color Color, int& Id)
 {
 	for (int i = 0; i < TOTAL_NUMERIC_CARDS; i++)
-		CreateCardAndAddToDeck(2, i, Color, Card::Type::Number);
+		CreateCardAndAddToDeck(2, Id, i, Color, Card::Type::Number);
 }
 
-void Table::CreateCardAndAddToDeck(const int& Amount, const int& Number, Card::Color Color, Card::Type Type)
+void Table::CreateCardAndAddToDeck(const int& Amount, int& Id, const int& Number, Card::Color Color, Card::Type Type)
 {
 	for (int i = 0; i < Amount; i++)
-		deck.emplace_back(new Card::Card{ Number, Color, Type });
+		deck.emplace_back(new Card::Card{ Id, Number, Color, Type });
+
+	Id++;
 }
 
 void Table::DiscardFirstCard()
@@ -65,7 +68,7 @@ std::vector<std::shared_ptr<Card::Card>> Table::GetNewHandOfCards()
 	return handOfCards;
 }
 
-void Table::DiscardCard(const std::shared_ptr<Card::Card>& CardToDiscard)
+void Table::DiscardCard(const std::shared_ptr<Card::Card> CardToDiscard)
 {
 	std::cout << "Discarting card: " << CardToDiscard->GetInfo() << "\n";
 	discardPile.emplace_back(CardToDiscard);

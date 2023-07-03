@@ -17,15 +17,17 @@ namespace Card
 	{
 	private:
 		const int number{};
+		const int id{};
 		Color color{};
 		Type cardType{};
 		std::function<void()> action{};
 
 	public:
 		Card() = default;
-		Card(const int Number, const Color Color, const Type CardType);
-		const Color GetColor() const;
+		Card(const int Id, const int Number, const Color Color, const Type CardType);
 		const int GetNumber() const;
+		const int GetId() const;
+		const Color GetColor() const;
 		const Type GetType() const;
 		void TryProcessAction();
 		std::string GetInfo() const;

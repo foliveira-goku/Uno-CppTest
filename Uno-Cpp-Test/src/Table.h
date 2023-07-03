@@ -21,14 +21,14 @@ private:
 
 public:
 	Table();
-	void CreateColoredCards(Card::Color Color);
-	void CreateNumericCards(Card::Color Color);
-	void CreateCardAndAddToDeck(const int& Amount, const int& Number, Card::Color Color, Card::Type Type);
+	void CreateColoredCards(Card::Color Color, int& Id);
+	void CreateNumericCards(Card::Color Color, int& Id);
+	void CreateCardAndAddToDeck(const int& Amount, int& Id, const int& Number, Card::Color Color, Card::Type Type);
 	void DiscardFirstCard();
 	std::shared_ptr<Card::Card> BuyCardFromDeck();
 	std::shared_ptr<Card::Card>& GetCurrentDiscardCard();
 	std::vector<std::shared_ptr<Card::Card>> GetNewHandOfCards();
-	void DiscardCard(const std::shared_ptr<Card::Card>& CardToDiscard);
+	void DiscardCard(const std::shared_ptr<Card::Card> CardToDiscard);
 	void RetreiveCardsFromDiscardToDeck();
 	void ShuffleCards(std::vector<std::shared_ptr<Card::Card>>& CardsToShuffle);
 

@@ -1,0 +1,56 @@
+#include "CardFunctions.h"
+
+void CardFunctions::Act(const Card::Type& CardType)
+{
+	switch (CardType)
+	{
+	case Card::Type::Number:
+		return;
+	case Card::Type::PlusTwo:
+		PlusTwo();
+		break;
+	case Card::Type::Reverse:
+		break;
+	case Card::Type::Jump:
+		break;
+	default:
+		break;
+	}
+}
+
+void CardFunctions::SetFunction_GetNextPlayer(const std::function<std::shared_ptr<Player>()>& Func)
+{
+	getNextPlayerFunction = Func;
+}
+
+void CardFunctions::SetFunction_BuyACard(const std::function<std::shared_ptr<Card::Card>()>& Func)
+{
+	buyACardFunction = Func;
+}
+
+void CardFunctions::SetFunction_GoToNextTurn(const std::function<void()>& Func)
+{
+	goToNextTurnFunction = Func;
+}
+
+void CardFunctions::PlusTwo()
+{
+	std::shared_ptr<Player> nextPlayer = getNextPlayerFunction();
+	std::cout << "\nA +2 card has been applied to " << nextPlayer->GetName() << "\n";
+
+	BuyCards(2, nextPlayer);
+
+	std::cout << "\n" << nextPlayer->GetName() << " has lost their turn...\n";
+	goToNextTurnFunction();
+}
+
+void CardFunctions::BuyCards(const int Amount, std::shared_ptr<Player>& Player)
+{
+	for (int i = 0; i < Amount; i++)
+	{
+		std::shared_ptr<Card::Card> newCard = buyACardFunction();
+		Player->ReceiveACard(newCard);
+	}
+
+	std::cout << "\n";
+}

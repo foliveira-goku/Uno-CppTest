@@ -3,11 +3,17 @@
 #include <functional>
 #include "Player.h"
 
+struct CardIdTypePair
+{
+	int Id;
+	Card::Type Type;
+};
+
 struct PlayerOptions
 {
 	int OptionsCount{};
 	std::string OptionsText{};
-	std::vector<std::shared_ptr<Card::Card>> PossibleCards;
+	std::vector<CardIdTypePair> PossibleCards;
 };
 
 class PlayersController
@@ -23,11 +29,15 @@ public:
 	void SetFunction_GetCurrentDiscardCard(const std::function<std::shared_ptr<Card::Card>& ()>& Function);
 	void CreatePlayer(const std::string& Name, const int& ID, const std::vector<std::shared_ptr<Card::Card>>& Cards);
 	void ReservePlayersOrder();
+	void GiveCardToCurrentPlayer(const std::shared_ptr<Card::Card> card);
+	std::shared_ptr<Card::Card> GetDiscardCardFromCurrentPlayer(const int& CardId);
 	void NextTurn();
+	const std::shared_ptr<Player>& GetNextPlayer() const;
 	const std::string GetCurrentPlayerName() const;
 	const int GetPlayersCount() const;
-	const PlayerOptions GetPlayerPossibleOptions() const;
+	const PlayerOptions GetPlayerPossibleOptions(const bool CanBuyCard = true) const;
 
 private:
 	bool AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardCard, std::shared_ptr<Card::Card>& OtherCard) const;
+	int GetNextPlayerIndex() const;
 };
