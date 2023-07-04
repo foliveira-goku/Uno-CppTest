@@ -37,39 +37,53 @@ void Game::Start()
 		int actionIndex = inputReader.GetPlayerAction(actionOptions.OptionsText, actionOptions.OptionsCount);
 		std::shared_ptr<Card::Card> discardCard;
 
-		bool hasBoughtACard = actionOptions.PossibleCards.size() + 1 == actionIndex ;
+		bool hasBoughtACard = actionOptions.PossibleCards.size() + 1 == actionIndex;
 		bool hasSaidUno = actionOptions.PossibleCards.size() + 2 == actionIndex;
 		// check if a card was bought OR if UNO was said
 		if (hasBoughtACard || hasSaidUno)
 		{
-			if(hasBoughtACard)
+			if (hasBoughtACard)
 			{
 				auto card = table.BuyCardFromDeck();
 				std::cout << "\nCard bought: " << card->GetInfo() << "\n";
 				playersController.GiveCardToCurrentPlayer(card);
 			}
-			
+
+			if (hasSaidUno)
+			{
+				std::cout << "\n\n" << playersController.GetCurrentPlayerName() << "says UNO!\n\n";
+				playersController.SetCurrentPlayerUnoState(true);
+			}
+
 			actionOptions = playersController.GetPlayerPossibleOptions(false);
-			
+
 			if (actionOptions.PossibleCards.size() <= 0)
 			{
-				std::cout << "There is no card to be discarded...\n";
+				std::cout << "\nThere is no card to be discarded...\n";
 				playersController.NextTurn();
 				continue;
 			}
 
 			actionIndex = inputReader.GetPlayerAction(actionOptions.OptionsText, actionOptions.OptionsCount);
-			discardCard = playersController.GetDiscardCardFromCurrentPlayer(actionOptions.PossibleCards[actionIndex - 1].Id);
-			table.DiscardCard(discardCard);
 		}
-		else
+
+		discardCard = playersController.GetDiscardCardFromCurrentPlayer(actionOptions.PossibleCards[actionIndex - 1].Id);
+		table.DiscardCard(discardCard);
+
+		auto playerCardsCount = playersController.GetCurrentPlayerCardsCount();
+		bool didntSayUno = playerCardsCount == 1 && !playersController.IsCurrentPlayerInUnoState();
+		if (didntSayUno)
 		{
-			discardCard = playersController.GetDiscardCardFromCurrentPlayer(actionOptions.PossibleCards[actionIndex - 1].Id);
-			table.DiscardCard(discardCard);
-			cardFunctions.Act(actionOptions.PossibleCards[actionIndex - 1].Type);
+			std::cout << "\n" << playersController.GetCurrentPlayerName() << " didn't say UNO!\n";
+			auto cardA = table.BuyCardFromDeck();
+			auto cardB = table.BuyCardFromDeck();
+			playersController.GiveCardToCurrentPlayer(cardA);
+			playersController.GiveCardToCurrentPlayer(cardB);
+
+			playersController.SetCurrentPlayerUnoState(false);
 		}
-		
-		// check if didn't say uno
+
+		cardFunctions.Act(actionOptions.PossibleCards[actionIndex - 1].Type);
 
 		playersController.NextTurn();
 	}
@@ -78,16 +92,17 @@ void Game::Start()
 void Game::SetupCardFunctions()
 {
 	cardFunctions.SetFunction_GetNextPlayer(
-		[this]()-> std::shared_ptr<Player>&	{ 
+		[this]()-> std::shared_ptr<Player>&
+		{
 			std::shared_ptr<Player> player = playersController.GetNextPlayer();
-			return player;	
+			return player;
 		});
 
 	cardFunctions.SetFunction_BuyACard(
 		[this]()-> std::shared_ptr<Card::Card> { return table.BuyCardFromDeck(); }
 	);
 
-	cardFunctions.SetFunction_GoToNextTurn(	[this]()-> void { return playersController.NextTurn(); });
+	cardFunctions.SetFunction_GoToNextTurn([this]()-> void { return playersController.NextTurn(); });
 
 	cardFunctions.SetFunction_ReversePlayersOrder([this]()-> void { return playersController.ReservePlayersOrder(); });
 }

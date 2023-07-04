@@ -73,22 +73,30 @@ const PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBu
 		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] " + currentPlayerCards[i]->GetInfo() + " | ";
 	}
 
-	if (!CanBuyCard)
-		return playerOptions;
-
-	playerOptions.OptionsCount++;
-	playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] Buy a card.";
-
-	if (currentPlayer->IsInUnoState())
+	if (CanBuyCard)
 	{
 		playerOptions.OptionsCount++;
-		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] UNO!";
+		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] Buy a card | ";
 	}
 
-	playerOptions.OptionsText += " |";
+	bool canSayUno = currentPlayerCards.size() == 2 && 
+					 playerOptions.PossibleCards.size() > 0 &&
+					 !currentPlayer->IsInUnoState();
+	if (canSayUno)
+	{
+		playerOptions.OptionsCount++;
+		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] UNO! |";
+	}
 
 	return playerOptions;
 }
+
+const bool PlayersController::IsCurrentPlayerInUnoState() {	return players[currentPlayerIndex]->IsInUnoState(); }
+
+const int PlayersController::GetCurrentPlayerCardsCount() { return players[currentPlayerIndex]->GetCards().size(); }
+
+void PlayersController::SetCurrentPlayerUnoState(const bool IsInUnoState) 
+{ players[currentPlayerIndex]->SetUnoState(IsInUnoState); }
 
 bool PlayersController::AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardCard, std::shared_ptr<Card::Card>& OtherCard) const
 {

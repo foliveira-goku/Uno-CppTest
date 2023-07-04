@@ -36,6 +36,9 @@ public:
 	const std::string GetCurrentPlayerName() const;
 	const int GetPlayersCount() const;
 	const PlayerOptions GetPlayerPossibleOptions(const bool CanBuyCard = true) const;
+	const bool IsCurrentPlayerInUnoState();
+	const int GetCurrentPlayerCardsCount();
+	void SetCurrentPlayerUnoState(const bool IsInUnoState);
 
 private:
 	bool AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardCard, std::shared_ptr<Card::Card>& OtherCard) const;
