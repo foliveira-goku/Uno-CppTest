@@ -10,6 +10,7 @@ void CardFunctions::Act(const Card::Type& CardType)
 		PlusTwo();
 		break;
 	case Card::Type::Reverse:
+		Reverse();
 		break;
 	case Card::Type::Jump:
 		break;
@@ -33,6 +34,11 @@ void CardFunctions::SetFunction_GoToNextTurn(const std::function<void()>& Func)
 	goToNextTurnFunction = Func;
 }
 
+void CardFunctions::SetFunction_ReversePlayersOrder(const std::function<void()>& Func)
+{
+	reversePlayersOrderFunction = Func;
+}
+
 void CardFunctions::PlusTwo()
 {
 	std::shared_ptr<Player> nextPlayer = getNextPlayerFunction();
@@ -42,6 +48,11 @@ void CardFunctions::PlusTwo()
 
 	std::cout << "\n" << nextPlayer->GetName() << " has lost their turn...\n";
 	goToNextTurnFunction();
+}
+
+void CardFunctions::Reverse()
+{
+	reversePlayersOrderFunction();
 }
 
 void CardFunctions::BuyCards(const int Amount, std::shared_ptr<Player>& Player)

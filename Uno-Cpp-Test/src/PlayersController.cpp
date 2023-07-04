@@ -17,7 +17,11 @@ void PlayersController::CreatePlayer(const std::string& Name, const int& ID,
 	players.emplace_back(new Player{ Name, ID, Cards });
 }
 
-void PlayersController::ReservePlayersOrder() { std::reverse(players.begin(), players.end()); }
+void PlayersController::ReservePlayersOrder()
+{
+	std::reverse(players.begin(), players.end()); 
+	currentPlayerIndex = players.size() - 1 - currentPlayerIndex;
+}
 
 void PlayersController::GiveCardToCurrentPlayer(const std::shared_ptr<Card::Card> card)
 {

@@ -44,5 +44,6 @@ std::shared_ptr<Card::Card> Player::GetDiscardCard(const int& CardId)
 		return card;
 	}
 
+	std::cout << "Card not found!\n";
 	return nullptr;
 }

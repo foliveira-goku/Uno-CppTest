@@ -20,7 +20,7 @@ void Table::CreateDeck()
 
 void Table::CreateColoredCards(Card::Color Color, int& Id)
 {
-	//CreateNumericCards(Color, Id);
+	CreateNumericCards(Color, Id);
 	CreateCardAndAddToDeck( TOTAL_PLUS_TWO_CARDS, Id, -1, Color, Card::Type::PlusTwo);
 	CreateCardAndAddToDeck(TOTAL_REVERSE_CARDS, Id, -1, Color, Card::Type::Reverse);
 	CreateCardAndAddToDeck(TOTAL_JUMP_CARDS,Id, -1, Color, Card::Type::Jump);

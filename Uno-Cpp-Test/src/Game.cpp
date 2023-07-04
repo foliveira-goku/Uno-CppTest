@@ -84,4 +84,6 @@ void Game::SetupCardFunctions()
 	);
 
 	cardFunctions.SetFunction_GoToNextTurn(	[this]()-> void { return playersController.NextTurn(); });
+
+	cardFunctions.SetFunction_ReversePlayersOrder([this]()-> void { return playersController.ReservePlayersOrder(); });
 }
