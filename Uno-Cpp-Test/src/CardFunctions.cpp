@@ -13,6 +13,7 @@ void CardFunctions::Act(const Card::Type& CardType)
 		Reverse();
 		break;
 	case Card::Type::Jump:
+		Jump();
 		break;
 	default:
 		break;
@@ -52,7 +53,15 @@ void CardFunctions::PlusTwo()
 
 void CardFunctions::Reverse()
 {
+	std::cout << "\nThe player order was reversed!\n";
 	reversePlayersOrderFunction();
+}
+
+void CardFunctions::Jump()
+{
+	std::cout << "\n" << getNextPlayerFunction()->GetName() << " was jumped!\n";
+
+	goToNextTurnFunction();
 }
 
 void CardFunctions::BuyCards(const int Amount, std::shared_ptr<Player>& Player)

@@ -58,7 +58,7 @@ const PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBu
 	PlayerOptions playerOptions{};
 
 	playerOptions.OptionsText = currentPlayer->GetInfo();
-	playerOptions.OptionsText += "\nChoose an option: \n";
+	playerOptions.OptionsText += "\nChoose an option: \n| ";
 
 	auto currentDiscardCard = getCurrentDiscardCardFunction();
 
@@ -70,7 +70,7 @@ const PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBu
 
 		playerOptions.PossibleCards.push_back({ currentPlayerCards[i]->GetId(), currentPlayerCards[i]->GetType() });
 		playerOptions.OptionsCount++;
-		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] " + currentPlayerCards[i]->GetInfo() + " ";
+		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] " + currentPlayerCards[i]->GetInfo() + " | ";
 	}
 
 	if (!CanBuyCard)
@@ -84,6 +84,8 @@ const PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBu
 		playerOptions.OptionsCount++;
 		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] UNO!";
 	}
+
+	playerOptions.OptionsText += " |";
 
 	return playerOptions;
 }

@@ -51,8 +51,12 @@ void Game::Start()
 			
 			actionOptions = playersController.GetPlayerPossibleOptions(false);
 			
-			if(actionOptions.PossibleCards.size() <= 0)
+			if (actionOptions.PossibleCards.size() <= 0)
+			{
+				std::cout << "There is no card to be discarded...\n";
 				playersController.NextTurn();
+				continue;
+			}
 
 			actionIndex = inputReader.GetPlayerAction(actionOptions.OptionsText, actionOptions.OptionsCount);
 			discardCard = playersController.GetDiscardCardFromCurrentPlayer(actionOptions.PossibleCards[actionIndex - 1].Id);

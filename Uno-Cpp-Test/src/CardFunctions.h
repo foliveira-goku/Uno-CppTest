@@ -20,6 +20,7 @@ public:
 private:
 	void PlusTwo();
 	void Reverse();
+	void Jump();
 	void BuyCards(const int Amount, std::shared_ptr<Player>& Player);
 };
 
