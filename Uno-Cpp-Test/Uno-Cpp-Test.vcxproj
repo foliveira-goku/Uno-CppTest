@@ -141,6 +141,7 @@
     <ClCompile Include="src\Table.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\RandomHelper.h" />
     <ClInclude Include="src\CardFunctions.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\PlayersController.h" />

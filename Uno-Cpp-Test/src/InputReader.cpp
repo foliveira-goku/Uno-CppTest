@@ -23,7 +23,7 @@ const int InputReader::GetAmountOfPlayers()
 	return playersAmount;
 }
 
-const std::string InputReader::GetPlayerName(const int& PlayerId)
+const std::string InputReader::GetPlayerName(const int PlayerId)
 {
 	std::string name;
 	std::cout << "Player " << PlayerId << "'s name:\n";
@@ -32,7 +32,7 @@ const std::string InputReader::GetPlayerName(const int& PlayerId)
 	return name;
 }
 
-const int InputReader::GetPlayerAction(const std::string& ActionsText, const int& AmountOfActions)
+const int InputReader::GetPlayerAction(const std::string& ActionsText, const int AmountOfActions)
 {
 	int actionInput = 0;
 

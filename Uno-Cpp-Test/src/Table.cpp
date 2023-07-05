@@ -32,7 +32,7 @@ void Table::CreateNumericCards(const Card::Color Color, int& Id)
 		CreateCardAndAddToDeck(2, Id, i, Color, Card::Type::Number);
 }
 
-void Table::CreateCardAndAddToDeck(const int& Amount, int& Id, const int& Number, Card::Color Color, Card::Type Type)
+void Table::CreateCardAndAddToDeck(const int Amount, int Id, const int Number, Card::Color Color, Card::Type Type)
 {
 	for (int i = 0; i < Amount; i++)
 		deck.emplace_back(new Card::Card{ Id, Number, Color, Type });
@@ -48,9 +48,16 @@ void Table::DiscardFirstCard()
 
 std::shared_ptr<Card::Card> Table::BuyCardFromDeck()
 {
-	int randomIndex = std::rand() % deck.size();
+	int randomIndex = RandomHelper::GetRandomNumber(deck.size());
 	std::shared_ptr<Card::Card> chosenCard = deck[randomIndex];
 	deck.erase(deck.begin() + randomIndex);
+	
+	if (deck.size() <= 0)
+	{
+		std::cout << "\nThe deck is empty...\n";
+		RetreiveCardsFromDiscardToDeck();
+	}
+	
 	return chosenCard;
 }
 
@@ -70,21 +77,18 @@ std::vector<std::shared_ptr<Card::Card>> Table::GetNewHandOfCards()
 
 void Table::DiscardCard(const std::shared_ptr<Card::Card> CardToDiscard)
 {
-	std::cout << "Discarting card: " << CardToDiscard->GetInfo() << "\n";
+	std::cout << "\nDiscarting card: " << CardToDiscard->GetInfo() << "\n";
 	discardPile.emplace_back(CardToDiscard);
 }
 
 void Table::RetreiveCardsFromDiscardToDeck()
 {
-	ShuffleCards(discardPile);
-	deck = discardPile;
-	discardPile.clear();
-}
+	std::cout << "Retreiving cards from discard pile to the deck...\n";
+	std::shared_ptr<Card::Card> topCardFromDiscardPile = std::move(discardPile[discardPile.size()-1]);
+	discardPile.erase(discardPile.begin() + (discardPile.size() - 1));
 
-// TODO this could be in a random class
-void Table::ShuffleCards(std::vector<std::shared_ptr<Card::Card>>& CardsToShuffle)
-{
-	std::random_device randomDevice;
-	std::mt19937 generator(randomDevice());
-	std::shuffle(CardsToShuffle.begin(), CardsToShuffle.end(), randomDevice);
+	RandomHelper::SuffleVector<std::shared_ptr<Card::Card>>(discardPile);
+	deck = std::move(discardPile);
+
+	discardPile.push_back(topCardFromDiscardPile);
 }

@@ -14,15 +14,15 @@ private:
 
 public:
 	Player() = default;
-	Player(const std::string& Name, const int& ID, 
-		const std::vector<std::shared_ptr<Card::Card>>& InitialCards);
+	Player(const std::string& Name,	const std::vector<std::shared_ptr<Card::Card>>& InitialCards);
 	const std::string GetName() const;
 	const std::vector<std::shared_ptr<Card::Card>>& GetCards() const; // do we need this?
 	const std::string GetInfo();
 	const bool IsInUnoState() const;
-	void SetUnoState(const bool& IsInUnoState);
-	void ReceiveACard(const std::shared_ptr<Card::Card> newCard);
+	void SetId(const int NewId);
+	void SetUnoState(const bool IsInUnoState);
+	void ReceiveACard(const std::shared_ptr<Card::Card> NewCard);
 	std::string GetAllCardsNames();
-	std::shared_ptr<Card::Card> GetDiscardCard(const int& cardIndex);
+	std::shared_ptr<Card::Card> GetCardToDiscard(const int CardIndex);
 };
 

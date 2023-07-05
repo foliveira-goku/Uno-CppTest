@@ -1,6 +1,6 @@
 #include "PlayersController.h"
 
-PlayersController::PlayersController(const int& AmountOfPlayers)
+PlayersController::PlayersController(const int AmountOfPlayers)
 {
 	players.reserve(AmountOfPlayers);
 }
@@ -11,10 +11,10 @@ void PlayersController::SetFunction_GetCurrentDiscardCard
 	getCurrentDiscardCardFunction = Function;
 }
 
-void PlayersController::CreatePlayer(const std::string& Name, const int& ID,
+void PlayersController::CreatePlayer(const std::string& Name,
 	const std::vector<std::shared_ptr<Card::Card>>& Cards)
 {
-	players.emplace_back(new Player{ Name, ID, Cards });
+	players.emplace_back(new Player{ Name, Cards });
 }
 
 void PlayersController::ReservePlayersOrder()
@@ -28,9 +28,9 @@ void PlayersController::GiveCardToCurrentPlayer(const std::shared_ptr<Card::Card
 	players[currentPlayerIndex]->ReceiveACard(card);
 }
 
-std::shared_ptr<Card::Card> PlayersController::GetDiscardCardFromCurrentPlayer(const int& CardId)
+std::shared_ptr<Card::Card> PlayersController::GetDiscardCardFromCurrentPlayer(const int CardId)
 {
-	return players[currentPlayerIndex]->GetDiscardCard(CardId);
+	return players[currentPlayerIndex]->GetCardToDiscard(CardId);
 }
 
 void PlayersController::NextTurn() 
@@ -97,6 +97,14 @@ const int PlayersController::GetCurrentPlayerCardsCount() { return players[curre
 
 void PlayersController::SetCurrentPlayerUnoState(const bool IsInUnoState) 
 { players[currentPlayerIndex]->SetUnoState(IsInUnoState); }
+
+void PlayersController::ShufflePlayersAndSetId()
+{
+	RandomHelper::SuffleVector<std::shared_ptr<Player>>(players);
+
+	for (int i = 0; i < players.size(); i++)
+		players[i]->SetId(i+1);
+}
 
 bool PlayersController::AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardCard, std::shared_ptr<Card::Card>& OtherCard) const
 {

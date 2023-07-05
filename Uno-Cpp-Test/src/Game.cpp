@@ -2,8 +2,9 @@
 
 Game::Game() : playersController{ inputReader.GetAmountOfPlayers() }
 {
-	std::srand(std::time(0));
+	RandomHelper::Initialize();
 	CreatePlayers();
+	playersController.ShufflePlayersAndSetId();
 	table.DiscardFirstCard();
 
 	playersController.SetFunction_GetCurrentDiscardCard
@@ -16,10 +17,11 @@ Game::Game() : playersController{ inputReader.GetAmountOfPlayers() }
 
 void Game::CreatePlayers()
 {
+	int playerCount{};
 	for (int i = 0; i < playersController.GetPlayersCount(); i++)
 	{
-		int playerID = i + 1;
-		playersController.CreatePlayer(inputReader.GetPlayerName(playerID), playerID, table.GetNewHandOfCards());
+		playerCount = i + 1;
+		playersController.CreatePlayer(inputReader.GetPlayerName(playerCount), table.GetNewHandOfCards());
 	}
 }
 
@@ -54,6 +56,8 @@ void Game::Start()
 				std::cout << "\n\n" << playersController.GetCurrentPlayerName() << "says UNO!\n\n";
 				playersController.SetCurrentPlayerUnoState(true);
 			}
+
+			std::cout << "\nCurrent discard card: " << table.GetCurrentDiscardCard()->GetInfo() << "\n";
 
 			actionOptions = playersController.GetPlayerPossibleOptions(false);
 
