@@ -11,9 +11,9 @@ void Table::CreateDeck()
 {
 	int currentId = 0 ;
 	CreateColoredCards(Card::Color::Blue, currentId);
-	//CreateColoredCards(Card::Color::Red, currentId);
-	//CreateColoredCards(Card::Color::Yellow, currentId);
-	//CreateColoredCards(Card::Color::Green, currentId);
+	CreateColoredCards(Card::Color::Red, currentId);
+	CreateColoredCards(Card::Color::Yellow, currentId);
+	CreateColoredCards(Card::Color::Green, currentId);
 
 	std::cout << "Deck created with " << deck.size() << " cards.\n";
 }
