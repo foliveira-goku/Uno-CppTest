@@ -74,7 +74,13 @@ void Game::Start()
 		discardCard = playersController.GetDiscardCardFromCurrentPlayer(actionOptions.PossibleCards[actionIndex - 1].Id);
 		table.DiscardCard(discardCard);
 
-		auto playerCardsCount = playersController.GetCurrentPlayerCardsCount();
+		int playerCardsCount = playersController.GetCurrentPlayerCardsCount();
+		if (playerCardsCount <= 0)
+		{
+			std::cout << "\n" << playersController.GetCurrentPlayerName() << " has won the game!!!\n";
+			return;
+		}
+
 		bool didntSayUno = playerCardsCount == 1 && !playersController.IsCurrentPlayerInUnoState();
 		if (didntSayUno)
 		{
