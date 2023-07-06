@@ -5,7 +5,7 @@
 
 namespace Card
 {
-	enum class Type	{ Number, PlusTwo, Reverse, Jump }; 
+	enum class Type	{ Number, PlusTwo, Reverse, Jump , PlusFour }; 
 
 	std::ostream& operator<<(std::ostream& os, const Type& value);
 	
@@ -20,7 +20,6 @@ namespace Card
 		const int id{};
 		Color color{};
 		Type cardType{};
-		std::function<void()> action{};
 
 	public:
 		Card() = default;
@@ -29,7 +28,8 @@ namespace Card
 		const int GetId() const;
 		const Color GetColor() const;
 		const Type GetType() const;
-		void TryProcessAction();
 		std::string GetInfo() const;
+		void ChangeColor(const Color NewColor);
+
 	};
 }

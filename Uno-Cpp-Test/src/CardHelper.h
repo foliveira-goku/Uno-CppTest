@@ -14,6 +14,8 @@ namespace Card
 			return "\033[33mYellow\33[0m";
 		case Color::Green:
 			return "\033[32mGreen\33[0m";
+		case Color::Black:
+			return "Black";
 		}
 
 		return std::string{};
@@ -25,16 +27,14 @@ namespace Card
 		{
 		case Type::Number:
 			return "Number";
-			break;
 		case Type::PlusTwo:
 			return "+2";
-			break;
 		case Type::Reverse:
 			return "Reverse";
-			break;
 		case Type::Jump:
 			return "Jump";
-			break;
+		case Type::PlusFour:
+			return "+4";
 		}
 	}
 

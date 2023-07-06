@@ -115,6 +115,15 @@ void Game::SetupCardFunctions()
 	cardFunctions.SetFunction_GiveCardToPlayer([this](std::shared_ptr<Card::Card> Card)-> void {
 			playersController.GiveCardToNextPlayer(Card);
 		});
+
+	cardFunctions.SetFunction_GetPlayerColorInput([this]()-> Card::Color {
+			return static_cast<Card::Color>(inputReader.GetNewCardColor());
+		});
+
+	cardFunctions.SetFunction_ChangeCurrentCardColor([this](Card::Color NewColor)-> void { 
+		auto card = table.GetCurrentDiscardCard();
+		card->ChangeColor(NewColor);
+	});
 }
 
 void Game::Start()

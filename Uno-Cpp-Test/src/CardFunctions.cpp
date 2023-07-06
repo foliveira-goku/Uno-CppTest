@@ -15,6 +15,9 @@ void CardFunctions::Act(const Card::Type& CardType)
 	case Card::Type::Jump:
 		Jump();
 		break;
+	case Card::Type::PlusFour:
+		PlusFour();
+		break;
 	default:
 		break;
 	}
@@ -53,6 +56,16 @@ void CardFunctions::SetFunction_ProcessNextPlayerPlusTwoTurn(const std::function
 void CardFunctions::SetFunction_GiveCardToPlayer(const std::function<void(std::shared_ptr<Card::Card>)>& Func)
 {
 	function_GiveCardToPlayer = Func;
+}
+
+void CardFunctions::SetFunction_GetPlayerColorInput(const std::function<Card::Color()>& Func)
+{
+	function_GetPlayerColorInput = Func;
+}
+
+void CardFunctions::SetFunction_ChangeCurrentCardColor(const std::function<void(Card::Color)>& Func)
+{
+	function_ChangeCurrentCardColor = Func;
 }
 
 void CardFunctions::PlusTwo()
@@ -98,6 +111,24 @@ void CardFunctions::Jump()
 {
 	std::cout << "\n" << function_GetNextPlayerName() << " was jumped!\n";
 
+	function_GoToNextTurn();
+}
+
+void CardFunctions::PlusFour()
+{
+	auto color = function_GetPlayerColorInput();
+	function_ChangeCurrentCardColor(color);
+
+	auto playerName = function_GetNextPlayerName();
+
+	std::cout << "\nA +4 card was applied to " << playerName << "!\n";
+
+	auto cards = BuyCards(4);
+
+	for (int i = 0; i < cards.size(); i++)
+		function_GiveCardToPlayer(cards[i]);
+
+	std::cout << "\n" << playerName << " has lost their turn...\n";
 	function_GoToNextTurn();
 }
 

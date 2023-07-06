@@ -12,6 +12,8 @@ class CardFunctions
 	std::function<const bool()> function_NextPlayerHasPlusTwo{};
 	std::function<void()> function_ProcessNextPlayerPlusTwoTurn{};
 	std::function<void(std::shared_ptr<Card::Card>)> function_GiveCardToPlayer{};
+	std::function<Card::Color()> function_GetPlayerColorInput{};
+	std::function<void(Card::Color)> function_ChangeCurrentCardColor{};
 
 	int plusTwoAmount{};
 
@@ -24,11 +26,14 @@ public:
 	void SetFunction_NextPlayerHasPlusTwo(const std::function<const bool()>& Func);
 	void SetFunction_ProcessNextPlayerPlusTwoTurn(const std::function<void()>& Func);
 	void SetFunction_GiveCardToPlayer(const std::function<void(std::shared_ptr<Card::Card>)>& Func);
+	void SetFunction_GetPlayerColorInput(const std::function<Card::Color()>& Func);
+	void SetFunction_ChangeCurrentCardColor(const std::function<void(Card::Color)>& Func);
 
 private:
 	void PlusTwo();
 	void Reverse();
 	void Jump();
+	void PlusFour();
 	std::vector<std::shared_ptr<Card::Card>> BuyCards(const int Amount);
 };
 
