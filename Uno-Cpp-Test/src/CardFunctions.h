@@ -5,22 +5,30 @@
 
 class CardFunctions
 {
-	std::function<std::shared_ptr<Player>()> getNextPlayerFunction;
-	std::function<std::shared_ptr<Card::Card>()> buyACardFunction;
-	std::function<void()> goToNextTurnFunction;
-	std::function<void()> reversePlayersOrderFunction;
+	std::function<const std::string()> function_GetNextPlayerName{};
+	std::function<std::shared_ptr<Card::Card>()> function_BuyACard{};
+	std::function<void()> function_GoToNextTurn{};
+	std::function<void()> function_ReversePlayersOrder{};
+	std::function<const bool()> function_NextPlayerHasPlusTwo{};
+	std::function<void()> function_ProcessNextPlayerPlusTwoTurn{};
+	std::function<void(std::shared_ptr<Card::Card>)> function_GiveCardToPlayer{};
+
+	int plusTwoAmount{};
 
 public:
 	void Act(const Card::Type& CardType);
-	void SetFunction_GetNextPlayer(const std::function<std::shared_ptr<Player>()>& Func);
+	void SetFunction_GetNextPlayerName(const std::function<const std::string()>& Func);
 	void SetFunction_BuyACard(const std::function<std::shared_ptr<Card::Card>()>& Func);
 	void SetFunction_GoToNextTurn(const std::function<void()>& Func);
 	void SetFunction_ReversePlayersOrder(const std::function<void()>& Func);
+	void SetFunction_NextPlayerHasPlusTwo(const std::function<const bool()>& Func);
+	void SetFunction_ProcessNextPlayerPlusTwoTurn(const std::function<void()>& Func);
+	void SetFunction_GiveCardToPlayer(const std::function<void(std::shared_ptr<Card::Card>)>& Func);
 
 private:
 	void PlusTwo();
 	void Reverse();
 	void Jump();
-	void BuyCards(const int Amount, std::shared_ptr<Player>& Player);
+	std::vector<std::shared_ptr<Card::Card>> BuyCards(const int Amount);
 };
 

@@ -21,7 +21,7 @@ public:
 	Table();
 	void CreateColoredCards(Card::Color Color, int& Id);
 	void CreateNumericCards(Card::Color Color, int& Id);
-	void CreateCardAndAddToDeck(const int Amount, int Id, const int Number, Card::Color Color, Card::Type Type);
+	void CreateCardAndAddToDeck(const int Amount, int& Id, const int Number, Card::Color Color, Card::Type Type);
 	void DiscardFirstCard();
 	std::shared_ptr<Card::Card> BuyCardFromDeck();
 	std::shared_ptr<Card::Card>& GetCurrentDiscardCard();

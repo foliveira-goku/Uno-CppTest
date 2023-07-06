@@ -23,6 +23,6 @@ public:
 	void SetUnoState(const bool IsInUnoState);
 	void ReceiveACard(const std::shared_ptr<Card::Card> NewCard);
 	std::string GetAllCardsNames();
-	std::shared_ptr<Card::Card> GetCardToDiscard(const int CardIndex);
+	std::shared_ptr<Card::Card> GetCardById(const int CardId);
 };
 

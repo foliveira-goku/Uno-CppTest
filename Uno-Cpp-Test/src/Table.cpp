@@ -32,12 +32,13 @@ void Table::CreateNumericCards(const Card::Color Color, int& Id)
 		CreateCardAndAddToDeck(2, Id, i, Color, Card::Type::Number);
 }
 
-void Table::CreateCardAndAddToDeck(const int Amount, int Id, const int Number, Card::Color Color, Card::Type Type)
+void Table::CreateCardAndAddToDeck(const int Amount, int& Id, const int Number, Card::Color Color, Card::Type Type)
 {
 	for (int i = 0; i < Amount; i++)
+	{
 		deck.emplace_back(new Card::Card{ Id, Number, Color, Type });
-
-	Id++;
+		Id++;
+	}
 }
 
 void Table::DiscardFirstCard()

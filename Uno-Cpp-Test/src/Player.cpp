@@ -32,7 +32,7 @@ std::string Player::GetAllCardsNames()
 	return cardsNames;
 }
 
-std::shared_ptr<Card::Card> Player::GetCardToDiscard(const int CardId)
+std::shared_ptr<Card::Card> Player::GetCardById(const int CardId)
 {
 	for (int i = 0; i < cards.size(); i++)
 	{

@@ -28,9 +28,19 @@ void PlayersController::GiveCardToCurrentPlayer(const std::shared_ptr<Card::Card
 	players[currentPlayerIndex]->ReceiveACard(card);
 }
 
-std::shared_ptr<Card::Card> PlayersController::GetDiscardCardFromCurrentPlayer(const int CardId)
+void PlayersController::GiveCardToNextPlayer(const std::shared_ptr<Card::Card> card)
 {
-	return players[currentPlayerIndex]->GetCardToDiscard(CardId);
+	players[GetNextPlayerIndex()]->ReceiveACard(card);
+}
+
+std::shared_ptr<Card::Card> PlayersController::GetPlayerCardById(const int CardId)
+{
+	return players[currentPlayerIndex]->GetCardById(CardId);
+}
+
+std::shared_ptr<Card::Card> PlayersController::GetNextPlayerCardById(const int CardId)
+{
+	return  players[GetNextPlayerIndex()]->GetCardById(CardId);
 }
 
 void PlayersController::NextTurn() 
@@ -38,9 +48,9 @@ void PlayersController::NextTurn()
 	currentPlayerIndex = GetNextPlayerIndex(); 
 }
 
-const std::shared_ptr<Player>& PlayersController::GetNextPlayer() const
+const std::string PlayersController::GetNextPlayerName() const
 {
-	return players[GetNextPlayerIndex()];
+	return players[GetNextPlayerIndex()]->GetName();
 }
 
 const std::string PlayersController::GetCurrentPlayerName() const
@@ -51,7 +61,7 @@ const std::string PlayersController::GetCurrentPlayerName() const
 const int PlayersController::GetPlayersCount() const { return players.capacity(); }
 
 //TODO refactor this!
-const PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBuyCard) const
+PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBuyCard) const
 {
 	auto currentPlayer = players[currentPlayerIndex];
 	auto currentPlayerCards = currentPlayer->GetCards();
@@ -82,6 +92,50 @@ const PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBu
 	bool canSayUno = currentPlayerCards.size() == 2 && 
 					 playerOptions.PossibleCards.size() > 0 &&
 					 !currentPlayer->IsInUnoState();
+	if (canSayUno)
+	{
+		playerOptions.OptionsCount++;
+		playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] UNO! |";
+	}
+
+	return playerOptions;
+}
+
+const bool PlayersController::NextPlayerHasPlusTwo() const
+{
+	auto cards = players[GetNextPlayerIndex()]->GetCards();
+
+	for (std::shared_ptr<Card::Card>& card : cards)
+	{
+		if (card->GetType() == Card::Type::PlusTwo)
+			return true;
+	}
+
+	return false;
+}
+
+PlayerOptions PlayersController::GetNextPlayerPossiblePlusTwoOptions(bool _) const
+{
+	auto nextPlayer = players[GetNextPlayerIndex()];
+	auto nextPlayerCards = nextPlayer->GetCards();
+	PlayerOptions playerOptions{};
+
+	playerOptions.OptionsText = nextPlayer->GetInfo();
+	playerOptions.OptionsText += "\nChoose an option: \n| ";
+
+	for (int i = 0; i < nextPlayerCards.size(); i++)
+	{
+		if (nextPlayerCards[i]->GetType() == Card::Type::PlusTwo)
+		{
+			playerOptions.PossibleCards.push_back({ nextPlayerCards[i]->GetId(), nextPlayerCards[i]->GetType() });
+			playerOptions.OptionsCount++;
+			playerOptions.OptionsText += "[" + std::to_string(playerOptions.OptionsCount) + "] " + nextPlayerCards[i]->GetInfo() + " | ";
+		}
+	}
+
+	bool canSayUno = nextPlayerCards.size() == 2 &&
+		playerOptions.PossibleCards.size() > 0 &&
+		!nextPlayer->IsInUnoState();
 	if (canSayUno)
 	{
 		playerOptions.OptionsCount++;
@@ -126,4 +180,7 @@ bool PlayersController::AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardC
 	return false;
 }
 
-int PlayersController::GetNextPlayerIndex() const {	return (currentPlayerIndex + 1) % players.size(); }
+int PlayersController::GetNextPlayerIndex(const int AmountForward) const
+{	
+	return (currentPlayerIndex + AmountForward) % players.size();
+}
