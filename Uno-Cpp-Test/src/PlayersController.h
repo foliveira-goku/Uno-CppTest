@@ -14,6 +14,8 @@ private:
 	std::function<std::shared_ptr<Card::Card>&()> function_GetCurrentDiscardCard;
 
 	static constexpr const char PlayerOptionFormat[] = " [{}] {} |";
+	static constexpr const char BuyACardText[] = "Buy a card";
+	static constexpr const char UnoText[] = "UNO!";
 
 public:
 	PlayersController() = default;
@@ -25,9 +27,9 @@ public:
 	std::shared_ptr<Card::Card> GetPlayerCardById(const int CardId, const PlayerSelection::Options ChosenPlayer);
 	std::string_view GetPlayerName(const PlayerSelection::Options PlayerChoice) const;
 	const int GetPlayersCount() const;
-	PlayerOptions GetPlayerPossibleOptions(const bool CanBuyCard = true) const;
+	PlayerOptions GetPlayerPossibleOptions(PlayerSelection::Options PlayerChoice, const bool CanBuyCard, 
+										   const bool CheckForPlusTwo);
 	const bool NextPlayerHasPlusTwo() const;
-	PlayerOptions GetNextPlayerPossiblePlusTwoOptions(bool _) const;
 	const bool IsPlayerInUnoState(const PlayerSelection::Options PlayerChoice) const;
 	const int GetPlayerCardsCount(const PlayerSelection::Options PlayerChoice);
 	void SetPlayerUnoState(const bool IsInUnoState, const PlayerSelection::Options PlayerChoice);
@@ -35,6 +37,8 @@ public:
 	void GoToNextTurn();
 
 private:
+	void AddPossibleCardsToPlayerOptions(PlayerOptions& PlayerOptions, const std::shared_ptr<Card::Card>& CurrentDiscardCard, 
+										const std::vector<std::shared_ptr<Card::Card>>& CurrentPlayerCards, const bool CheckForPlusTwo);
 	bool AreCardsCompatible(const std::shared_ptr<Card::Card>& DiscardCard, const std::shared_ptr<Card::Card>& OtherCard) const;
 	int GetPlayerIndex(const PlayerSelection::Options ChosenPlayer) const;
 };

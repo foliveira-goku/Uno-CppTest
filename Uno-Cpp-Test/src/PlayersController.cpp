@@ -42,52 +42,6 @@ std::string_view PlayersController::GetPlayerName(const PlayerSelection::Options
 
 const int PlayersController::GetPlayersCount() const { return players.capacity(); }
 
-PlayerOptions PlayersController::GetPlayerPossibleOptions(const bool CanBuyCard) const
-{
-	auto currentPlayer = players[currentPlayerIndex];
-	auto currentPlayerCards = currentPlayer->GetCards();
-	PlayerOptions playerOptions{};
-	std::string tempOption{}; // não sou fã, mas...
-	
-	playerOptions.OptionsText = currentPlayer->GetInfo();
-	playerOptions.OptionsText.append("\nChoose an option: \n|");
-
-	auto currentDiscardCard = function_GetCurrentDiscardCard();
-	
-	
-	for (int i = 0; i < currentPlayerCards.size(); i++)
-	{
-		// Compare cards
-		if (!AreCardsCompatible(currentDiscardCard, currentPlayerCards[i]))
-			continue;
-
-		playerOptions.PossibleCards.push_back({ currentPlayerCards[i]->GetId(), currentPlayerCards[i]->GetType() });
-		playerOptions.OptionsCount++;
-		
-		tempOption = std::format(PlayerOptionFormat, playerOptions.OptionsCount, currentPlayerCards[i]->GetInfo());
-		playerOptions.OptionsText.append(tempOption);
-	}
-
-	if (CanBuyCard)
-	{
-		playerOptions.OptionsCount++;
-		tempOption = std::format(PlayerOptionFormat, playerOptions.OptionsCount, "Buy a card");
-		playerOptions.OptionsText.append(tempOption);
-	}
-
-	bool canSayUno = currentPlayerCards.size() == 2 && 
-					 playerOptions.PossibleCards.size() > 0 &&
-					 !currentPlayer->IsInUnoState();
-	if (canSayUno)
-	{
-		playerOptions.OptionsCount++;
-		tempOption = std::format(PlayerOptionFormat, playerOptions.OptionsCount, "UNO!");
-		playerOptions.OptionsText.append(tempOption);
-	}
-
-	return playerOptions;
-}
-
 const bool PlayersController::NextPlayerHasPlusTwo() const
 {
 	auto cards = players[GetPlayerIndex(PlayerSelection::Next)]->GetCards();
@@ -101,36 +55,59 @@ const bool PlayersController::NextPlayerHasPlusTwo() const
 	return false;
 }
 
-PlayerOptions PlayersController::GetNextPlayerPossiblePlusTwoOptions(bool _) const
+PlayerOptions PlayersController::GetPlayerPossibleOptions(PlayerSelection::Options PlayerChoice, const bool CanBuyCard,
+	const bool CheckForPlusTwo) // <- this boolean is ugly but it was the easest way to do it
 {
-	auto nextPlayer = players[GetPlayerIndex(PlayerSelection::Next)];
-	auto nextPlayerCards = nextPlayer->GetCards();
-	PlayerOptions playerOptions{};
+	std::shared_ptr<Player> chosenPlayer = players[GetPlayerIndex(PlayerChoice)];
+	std::vector<std::shared_ptr<Card::Card>> currentPlayerCards = chosenPlayer->GetCards();
+	PlayerOptions playerOptions{ 0, chosenPlayer->GetInfo(), {} };
+	std::string formatedOptionText{};
+	
+	playerOptions.OptionsText.append("\nChoose an option: \n|");
 
-	playerOptions.OptionsText = nextPlayer->GetInfo();
-	playerOptions.OptionsText.append("\nChoose an option: \n| ");
+	std::shared_ptr<Card::Card> currentDiscardCard = function_GetCurrentDiscardCard();
+	
+	AddPossibleCardsToPlayerOptions(playerOptions, currentDiscardCard, currentPlayerCards, CheckForPlusTwo);
 
-	for (int i = 0; i < nextPlayerCards.size(); i++)
+	if (CanBuyCard)
 	{
-		if (nextPlayerCards[i]->GetType() == Card::Type::PlusTwo)
-		{
-			playerOptions.PossibleCards.push_back({ nextPlayerCards[i]->GetId(), nextPlayerCards[i]->GetType() });
-			playerOptions.OptionsCount++;
-			playerOptions.OptionsText.append("[").append(std::to_string(playerOptions.OptionsCount)).append("] ")
-									 .append(nextPlayerCards[i]->GetInfo()).append(" | ");
-		}
+		playerOptions.OptionsCount++;
+		formatedOptionText = std::format(PlayerOptionFormat, playerOptions.OptionsCount, BuyACardText);
+		playerOptions.OptionsText.append(formatedOptionText);
 	}
 
-	bool canSayUno = nextPlayerCards.size() == 2 &&
-		playerOptions.PossibleCards.size() > 0 &&
-		!nextPlayer->IsInUnoState();
+	bool canSayUno = currentPlayerCards.size() == 2 && 
+					 playerOptions.PossibleCards.size() > 0 &&
+					 !chosenPlayer->IsInUnoState();
 	if (canSayUno)
 	{
 		playerOptions.OptionsCount++;
-		playerOptions.OptionsText.append("[").append(std::to_string(playerOptions.OptionsCount)).append("] UNO! |");
+		formatedOptionText = std::format(PlayerOptionFormat, playerOptions.OptionsCount, UnoText);
+		playerOptions.OptionsText.append(formatedOptionText);
 	}
 
 	return playerOptions;
+}
+
+void PlayersController::AddPossibleCardsToPlayerOptions(PlayerOptions& PlayerOptions, const std::shared_ptr<Card::Card>& CurrentDiscardCard,
+	const std::vector<std::shared_ptr<Card::Card>>& CurrentPlayerCards, const bool CheckForPlusTwo)
+{
+	std::string formatedOptionText{};
+
+	for (int i = 0; i < CurrentPlayerCards.size(); i++)
+	{
+		if (!AreCardsCompatible(CurrentDiscardCard, CurrentPlayerCards[i]))
+			continue;
+
+		if (CheckForPlusTwo && CurrentPlayerCards[i]->GetType() != Card::Type::PlusTwo)
+			continue;
+
+		PlayerOptions.PossibleCards.push_back({ CurrentPlayerCards[i]->GetId(), CurrentPlayerCards[i]->GetType() });
+		PlayerOptions.OptionsCount++;
+
+		formatedOptionText = std::format(PlayerOptionFormat, PlayerOptions.OptionsCount, CurrentPlayerCards[i]->GetInfo());
+		PlayerOptions.OptionsText.append(formatedOptionText);
+	}
 }
 
 const bool PlayersController::IsPlayerInUnoState(const PlayerSelection::Options PlayerChoice) const
@@ -159,7 +136,7 @@ void PlayersController::GoToNextTurn()
 	currentPlayerIndex = GetPlayerIndex(PlayerSelection::Next);
 }
 
-bool PlayersController::AreCardsCompatible(const std::shared_ptr<Card::Card>& DiscardCard, 
+bool PlayersController::AreCardsCompatible(const std::shared_ptr<Card::Card>& DiscardCard,
 										   const std::shared_ptr<Card::Card>& OtherCard) const
 {
 	if (OtherCard->GetColor() == Card::Color::Black)

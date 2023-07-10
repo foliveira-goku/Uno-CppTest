@@ -14,13 +14,15 @@ Game::Game() : playersController{ inputReader.GetAmountOfPlayers() }
 
 	GetPlayerPossibleOptions = [this](bool canBuyCard) -> PlayerOptions
 	{
-		PlayerOptions options = playersController.GetPlayerPossibleOptions(canBuyCard);
+		PlayerOptions options = playersController.GetPlayerPossibleOptions(
+								PlayerSelection::Current, canBuyCard, false);
 		return options;
 	};
 
-	GetPlayerPossiblePlusTwoOptions = [this](bool _) -> PlayerOptions
+	GetNextPlayerPossiblePlusTwoOptions = [this](bool _) -> PlayerOptions
 	{
-		PlayerOptions options = playersController.GetNextPlayerPossiblePlusTwoOptions(_);
+		PlayerOptions options = playersController.GetPlayerPossibleOptions(
+								PlayerSelection::Next, false, true);
 		return options;
 	};
 
@@ -53,7 +55,7 @@ void Game::SetupCardFunctions()
 	cardFunctions.SetFunction_ProcessNextPlayerPlusTwoTurn(
 		[this]() -> void
 		{
-			int chosenCardId = ProcessPlayerActionChoise(GetPlayerPossiblePlusTwoOptions, false);
+			int chosenCardId = ProcessPlayerActionChoise(GetNextPlayerPossiblePlusTwoOptions, false);
 			table.DiscardCard(playersController.GetPlayerCardById(chosenCardId, PlayerSelection::Next));
 		});
 

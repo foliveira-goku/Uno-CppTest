@@ -14,7 +14,7 @@ private:
 	PlayersController playersController{};
 	CardFunctions cardFunctions{};
 	std::function<PlayerOptions (const bool)> GetPlayerPossibleOptions;
-	std::function<PlayerOptions (const bool)> GetPlayerPossiblePlusTwoOptions;
+	std::function<PlayerOptions (const bool)> GetNextPlayerPossiblePlusTwoOptions;
 public:
 	Game();
 	void Start();
