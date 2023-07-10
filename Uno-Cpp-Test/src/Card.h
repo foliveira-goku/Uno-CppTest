@@ -20,6 +20,7 @@ namespace Card
 		const int id{};
 		Color color{};
 		Type cardType{};
+		std::string cardInfo{};
 
 	public:
 		Card() = default;
@@ -28,8 +29,9 @@ namespace Card
 		const int GetId() const;
 		const Color GetColor() const;
 		const Type GetType() const;
-		std::string GetInfo() const;
+		std::string_view GetInfo() const;
 		void ChangeColor(const Color NewColor);
-
+	private:
+		void SetCardInfo();
 	};
 }

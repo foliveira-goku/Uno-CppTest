@@ -11,11 +11,7 @@ private:
 	~RandomHelper() = delete;
 
 public:
-	static void Initialize()
-	{
-		std::srand(std::time(0));
-
-	}
+	static void Initialize() {std::srand(std::time(0));}
 
 	template <typename T> 
 	static void SuffleVector(std::vector<T>& Vector)

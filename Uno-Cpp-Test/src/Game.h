@@ -21,7 +21,8 @@ public:
 
 private:
 	const int ProcessPlayerActionChoise(const std::function<PlayerOptions (const bool)>& GetPlayerOptions, const bool CanBuyCard);
-	const bool CheckIfHasValidCard(const int AmountOfPossibleActions);
+	PlayerOptions HandleExtraOptions(const int PossibleCardsAmount, const int ChosenActionIndex, const bool CanBuyCard,
+		const std::function<PlayerOptions(const bool)>& GetPlayerOptions);
 	const bool CheckIfPlayerHasWonTheGame(const int AmountOfCards);
 	const bool CheckIfDidntSayUno(const int AmountOfCards);
 	void ShowCurrentDiscardCard();

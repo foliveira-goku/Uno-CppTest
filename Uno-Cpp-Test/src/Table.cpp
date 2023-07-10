@@ -10,9 +10,9 @@ Table::Table()
 void Table::CreateDeck()
 {
 	int currentId = 0 ;
-	//CreateColoredCards(Card::Color::Blue, currentId);
-	//CreateColoredCards(Card::Color::Red, currentId);
-	//CreateColoredCards(Card::Color::Yellow, currentId);
+	CreateColoredCards(Card::Color::Blue, currentId);
+	CreateColoredCards(Card::Color::Red, currentId);
+	CreateColoredCards(Card::Color::Yellow, currentId);
 	CreateColoredCards(Card::Color::Green, currentId);
 	CreateCardAndAddToDeck(TOTAL_PLUS_FOUR_CARDS, currentId, -1, 
 						   Card::Color::Black, Card::Type::PlusFour);

@@ -4,13 +4,16 @@
 #include "Player.h"
 #include "RandomHelper.h"
 #include "PlayerOptions.h"
+#include "PlayerSelection.h"
 
 class PlayersController
 {
 private:
-	std::vector<std::shared_ptr<Player>> players{};
 	int currentPlayerIndex = 0;
-	std::function<std::shared_ptr<Card::Card>&()> getCurrentDiscardCardFunction;
+	std::vector<std::shared_ptr<Player>> players{};
+	std::function<std::shared_ptr<Card::Card>&()> function_GetCurrentDiscardCard;
+
+	static constexpr const char PlayerOptionFormat[] = " [{}] {} |";
 
 public:
 	PlayersController() = default;
@@ -18,23 +21,20 @@ public:
 	void SetFunction_GetCurrentDiscardCard(const std::function<std::shared_ptr<Card::Card>& ()>& Function);
 	void CreatePlayer(const std::string& Name, const std::vector<std::shared_ptr<Card::Card>>& Cards);
 	void ReservePlayersOrder();
-	void GiveCardToCurrentPlayer(const std::shared_ptr<Card::Card> card);
-	void GiveCardToNextPlayer(const std::shared_ptr<Card::Card> card);
-	std::shared_ptr<Card::Card> GetPlayerCardById(const int CardId);
-	std::shared_ptr<Card::Card> GetNextPlayerCardById(const int CardId);
-	void NextTurn();
-	const std::string GetCurrentPlayerName() const;
-	const std::string GetNextPlayerName() const;
+	void GiveCardToPlayer(const std::shared_ptr<Card::Card> Card, const PlayerSelection::Options ChosenPlayer);
+	std::shared_ptr<Card::Card> GetPlayerCardById(const int CardId, const PlayerSelection::Options ChosenPlayer);
+	std::string_view GetPlayerName(const PlayerSelection::Options PlayerChoice) const;
 	const int GetPlayersCount() const;
 	PlayerOptions GetPlayerPossibleOptions(const bool CanBuyCard = true) const;
 	const bool NextPlayerHasPlusTwo() const;
 	PlayerOptions GetNextPlayerPossiblePlusTwoOptions(bool _) const;
-	const bool IsCurrentPlayerInUnoState();
-	const int GetCurrentPlayerCardsCount();
-	void SetCurrentPlayerUnoState(const bool IsInUnoState);
+	const bool IsPlayerInUnoState(const PlayerSelection::Options PlayerChoice) const;
+	const int GetPlayerCardsCount(const PlayerSelection::Options PlayerChoice);
+	void SetPlayerUnoState(const bool IsInUnoState, const PlayerSelection::Options PlayerChoice);
 	void ShufflePlayersAndSetId();
+	void GoToNextTurn();
 
 private:
-	bool AreCardsCompatible(std::shared_ptr<Card::Card>& DiscardCard, std::shared_ptr<Card::Card>& OtherCard) const;
-	int GetNextPlayerIndex(const int AmountForward = 1) const;
+	bool AreCardsCompatible(const std::shared_ptr<Card::Card>& DiscardCard, const std::shared_ptr<Card::Card>& OtherCard) const;
+	int GetPlayerIndex(const PlayerSelection::Options ChosenPlayer) const;
 };

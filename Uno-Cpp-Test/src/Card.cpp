@@ -5,7 +5,9 @@ namespace Card
 {
 	Card::Card(const int Id, const int Number, const Color Color, const Type CardType) :
 		id{Id}, number{ Number }, color{ Color }, cardType{ CardType }
-	{}
+	{
+		SetCardInfo();
+	}
 
 	const Color Card::GetColor() const { return color; }
 
@@ -13,15 +15,25 @@ namespace Card
 
 	const int Card::GetId() const { return id; }
 
-	const Type Card::GetType() const	{ return cardType;	}
+	const Type Card::GetType() const { return cardType;	}
 
-	std::string Card::GetInfo() const
-	{
-		if (GetNumber() < 0)
-			return Type_ToString(cardType) + " " + Color_ToString(color);
+	std::string_view Card::GetInfo() const { return cardInfo; }
 
-		return Type_ToString(cardType) + " " + std::to_string(number) + " " + Color_ToString(color) ;
+	void Card::ChangeColor(const Color NewColor) 
+	{ 
+		color = NewColor;
+		SetCardInfo();
 	}
 
-	void Card::ChangeColor(const Color NewColor) { color = NewColor; }
+	void Card::SetCardInfo()
+	{
+		if (number < 0)
+		{
+			cardInfo = Type_ToString(cardType).append(" ").append(Color_ToString(color));
+			return;
+		}
+
+		cardInfo = Type_ToString(cardType).append(" ").append(std::to_string(number))
+			       .append(" ").append(Color_ToString(color));	
+	}
 }

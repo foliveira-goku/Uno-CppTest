@@ -23,9 +23,9 @@ void CardFunctions::Act(const Card::Type& CardType)
 	}
 }
 
-void CardFunctions::SetFunction_GetNextPlayerName(const std::function<const std::string()>& Func)
+void CardFunctions::SetFunction_GetPlayerName(const std::function<std::string_view(PlayerSelection::Options)>& Func)
 {
-	function_GetNextPlayerName = Func;
+	function_GetPlayerName = Func;
 }
 
 void CardFunctions::SetFunction_BuyACard(const std::function<std::shared_ptr<Card::Card>()>& Func)
@@ -53,7 +53,7 @@ void CardFunctions::SetFunction_ProcessNextPlayerPlusTwoTurn(const std::function
 	function_ProcessNextPlayerPlusTwoTurn = Func;
 }
 
-void CardFunctions::SetFunction_GiveCardToPlayer(const std::function<void(std::shared_ptr<Card::Card>)>& Func)
+void CardFunctions::SetFunction_GiveCardToPlayer(const std::function<void(std::shared_ptr<Card::Card>, PlayerSelection::Options)>& Func)
 {
 	function_GiveCardToPlayer = Func;
 }
@@ -74,7 +74,7 @@ void CardFunctions::PlusTwo()
 
 	while (true)
 	{
-		std::cout << "\nA +2 card has been applied to " << function_GetNextPlayerName() << ".\n"
+		std::cout << "\nA +2 card has been applied to " << function_GetPlayerName(PlayerSelection::Next) << ".\n"
 			<< "Total cards to buy: " << plusTwoAmount * 2 << "\n";
 
 		if (function_NextPlayerHasPlusTwo())
@@ -85,14 +85,14 @@ void CardFunctions::PlusTwo()
 		}
 		else
 		{
-			auto playerName = function_GetNextPlayerName();
+			auto playerName = function_GetPlayerName(PlayerSelection::Next);
 
 			std::cout << "\n" << playerName << " doesn't have a +2 card.\n";
 
 			auto cards = BuyCards(plusTwoAmount * 2);
 			
 			for (int i = 0; i < cards.size(); i++)
-				function_GiveCardToPlayer(cards[i]);
+				function_GiveCardToPlayer(cards[i], PlayerSelection::Next);
 			
 			std::cout << "\n" << playerName << " has lost their turn...\n";
 			function_GoToNextTurn();
@@ -109,7 +109,7 @@ void CardFunctions::Reverse()
 
 void CardFunctions::Jump()
 {
-	std::cout << "\n" << function_GetNextPlayerName() << " was jumped!\n";
+	std::cout << "\n" << function_GetPlayerName(PlayerSelection::Next) << " was jumped!\n";
 
 	function_GoToNextTurn();
 }
@@ -119,14 +119,14 @@ void CardFunctions::PlusFour()
 	auto color = function_GetPlayerColorInput();
 	function_ChangeCurrentCardColor(color);
 
-	auto playerName = function_GetNextPlayerName();
+	auto playerName = function_GetPlayerName(PlayerSelection::Next);
 
 	std::cout << "\nA +4 card was applied to " << playerName << "!\n";
 
 	auto cards = BuyCards(4);
 
 	for (int i = 0; i < cards.size(); i++)
-		function_GiveCardToPlayer(cards[i]);
+		function_GiveCardToPlayer(cards[i], PlayerSelection::Next);
 
 	std::cout << "\n" << playerName << " has lost their turn...\n";
 	function_GoToNextTurn();

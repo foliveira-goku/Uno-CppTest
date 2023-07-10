@@ -37,93 +37,39 @@ void Game::CreatePlayers()
 	}
 }
 
-void Game::BuyCardsForPlayer(const int Amount)
-{
-	for (int i = 0; i < Amount; i++)
-	{
-		auto card = table.BuyCardFromDeck();
-		std::cout << "\nCard bought: " << card->GetInfo() << "\n";
-		playersController.GiveCardToCurrentPlayer(card);
-	}
-}
-
-void Game::SayUno()
-{
-	std::cout << "\n\n" << playersController.GetCurrentPlayerName() << "says UNO!\n\n";
-	playersController.SetCurrentPlayerUnoState(true);
-}
-
-const bool Game::CheckIfHasValidCard(const int AmountOfPossibleActions)
-{
-	if (AmountOfPossibleActions <=0)
-	{
-		std::cout << "\nThere is no card to be discarded...\n";
-		return false;
-	}
-
-	return true;
-}
-
-const bool Game::CheckIfPlayerHasWonTheGame(const int AmountOfCards)
-{
-	if (AmountOfCards <= 0)
-	{
-		std::cout << "\n" << playersController.GetCurrentPlayerName() << " has won the game!!!\n";
-		return true;
-	}
-	return false;
-}
-
-const bool Game::CheckIfDidntSayUno(const int AmountOfCards)
-{
-	if (AmountOfCards == 1 && !playersController.IsCurrentPlayerInUnoState())
-	{
-		std::cout << "\n" << playersController.GetCurrentPlayerName() << " didn't say UNO!\n";
-		return true;
-	}
-	return false;
-}
-
-void Game::ShowCurrentDiscardCard()
-{
-	std::cout << "\nCurrent discard card: " << table.GetCurrentDiscardCard()->GetInfo() << "\n";
-}
-
 void Game::SetupCardFunctions()
 {
-	cardFunctions.SetFunction_GetNextPlayerName(
-		[this]()-> const std::string
-		{
-			return playersController.GetNextPlayerName();
-		});
+	cardFunctions.SetFunction_GetPlayerName(
+		[this](PlayerSelection::Options PlayerChoice)-> std::string_view { return playersController.GetPlayerName(PlayerChoice);});
 
-	cardFunctions.SetFunction_BuyACard(
-		[this]()-> std::shared_ptr<Card::Card> { return table.BuyCardFromDeck(); }
-	);
+	cardFunctions.SetFunction_BuyACard([this]()-> std::shared_ptr<Card::Card> { return table.BuyCardFromDeck(); });
 
-	cardFunctions.SetFunction_GoToNextTurn([this]()-> void { playersController.NextTurn(); });
+	cardFunctions.SetFunction_GoToNextTurn([this]()-> void { playersController.GoToNextTurn(); });
 
 	cardFunctions.SetFunction_ReversePlayersOrder([this]()-> void { playersController.ReservePlayersOrder(); });
 
 	cardFunctions.SetFunction_NextPlayerHasPlusTwo([this]()-> const bool { return playersController.NextPlayerHasPlusTwo(); });
 
-	cardFunctions.SetFunction_ProcessNextPlayerPlusTwoTurn([this]() -> void {
+	cardFunctions.SetFunction_ProcessNextPlayerPlusTwoTurn(
+		[this]() -> void
+		{
 			int chosenCardId = ProcessPlayerActionChoise(GetPlayerPossiblePlusTwoOptions, false);
-			table.DiscardCard(playersController.GetNextPlayerCardById(chosenCardId));
+			table.DiscardCard(playersController.GetPlayerCardById(chosenCardId, PlayerSelection::Next));
 		});
 
-	cardFunctions.SetFunction_GiveCardToPlayer([this](std::shared_ptr<Card::Card> Card)-> void {
-			playersController.GiveCardToNextPlayer(Card);
-		});
+	cardFunctions.SetFunction_GiveCardToPlayer(
+		[this](std::shared_ptr<Card::Card> Card,PlayerSelection::Options PlayerChoise)-> void	
+		{ playersController.GiveCardToPlayer(Card, PlayerChoise); });
 
-	cardFunctions.SetFunction_GetPlayerColorInput([this]()-> Card::Color {
-			return static_cast<Card::Color>(inputReader.GetNewCardColor());
-		});
+	cardFunctions.SetFunction_GetPlayerColorInput(
+		[this]()-> Card::Color {return static_cast<Card::Color>(inputReader.GetNewCardColor()); });
 
-	cardFunctions.SetFunction_ChangeCurrentCardColor([this](Card::Color NewColor)-> void { 
-		auto card = table.GetCurrentDiscardCard();
-		card->ChangeColor(NewColor);
-	});
+	cardFunctions.SetFunction_ChangeCurrentCardColor(
+		[this](Card::Color NewColor)-> void	
+		{
+			auto card = table.GetCurrentDiscardCard();
+			card->ChangeColor(NewColor);
+		});
 }
 
 void Game::Start()
@@ -132,69 +78,124 @@ void Game::Start()
 
 	while (true)
 	{
-		std::string name = playersController.GetCurrentPlayerName();
-		std::cout << "\n\n\nCurrent player: " << name << "\n";
+		std::cout << "\n\n\nCurrent player: " << playersController.GetPlayerName(PlayerSelection::Current) << "\n";
 		ShowCurrentDiscardCard();
 
 		int chosenCardId = ProcessPlayerActionChoise(GetPlayerPossibleOptions, true);
 
 		if (chosenCardId < 0)
 		{
-			playersController.NextTurn();
+			playersController.GoToNextTurn();
 			continue;
 		}
 
-		std::shared_ptr<Card::Card> discardCard = playersController.GetPlayerCardById(chosenCardId);
+		std::shared_ptr<Card::Card> discardCard = playersController.GetPlayerCardById(chosenCardId, PlayerSelection::Current);
 		Card::Type discardCardType = discardCard->GetType();
-		
+
 		table.DiscardCard(discardCard);
 
-		int playerCardsCount = playersController.GetCurrentPlayerCardsCount();
+		int playerCardsCount = playersController.GetPlayerCardsCount(PlayerSelection::Current);
 		if (CheckIfPlayerHasWonTheGame(playerCardsCount))
 			return;
 
 		if (CheckIfDidntSayUno(playerCardsCount))
 		{
 			BuyCardsForPlayer(2);
-			playersController.SetCurrentPlayerUnoState(false);
+			playersController.SetPlayerUnoState(false, PlayerSelection::Current);
 		}
 
 		cardFunctions.Act(discardCardType);
 
-		playersController.NextTurn();
+		playersController.GoToNextTurn();
 	}
 }
 
-const int Game::ProcessPlayerActionChoise(const std::function<PlayerOptions (const bool)>& GetPlayerOptions, 
+void Game::BuyCardsForPlayer(const int Amount)
+{
+	for (int i = 0; i < Amount; i++)
+	{
+		auto card = table.BuyCardFromDeck();
+		std::cout << "\nCard bought: " << card->GetInfo() << "\n";
+		playersController.GiveCardToPlayer(card, PlayerSelection::Current);
+	}
+}
+
+void Game::SayUno()
+{
+	std::cout << "\n\n" << playersController.GetPlayerName(PlayerSelection::Current) << "says UNO!\n\n";
+	playersController.SetPlayerUnoState(true, PlayerSelection::Current);
+}
+
+const bool Game::CheckIfPlayerHasWonTheGame(const int AmountOfCards)
+{
+	if (AmountOfCards <= 0)
+	{
+		std::cout << "\n" << playersController.GetPlayerName(PlayerSelection::Current) << " has won the game!!!\n";
+		return true;
+	}
+	return false;
+}
+
+const bool Game::CheckIfDidntSayUno(const int AmountOfCards)
+{
+	if (AmountOfCards == 1 && !playersController.IsPlayerInUnoState(PlayerSelection::Current))
+	{
+		std::cout << "\n" << playersController.GetPlayerName(PlayerSelection::Current) << " didn't say UNO!\n";
+		return true;
+	}
+	return false;
+}
+
+void Game::ShowCurrentDiscardCard()
+{
+	std::cout << "\nCurrent discard card: " << table.GetCurrentDiscardCard()->GetInfo() << "\n\n";
+}
+
+const int Game::ProcessPlayerActionChoise(const std::function<PlayerOptions(const bool)>& GetPlayerOptions, 
 	const bool CanBuyCard)
 {
 	auto actionOptions = GetPlayerOptions(CanBuyCard);
 	int actionIndex = inputReader.GetPlayerAction(actionOptions.OptionsText, actionOptions.OptionsCount);
 
 	int possibleCardsAmount = actionOptions.PossibleCards.size();
-	// check if a card was bought OR if UNO was said
+
 	if (actionIndex > possibleCardsAmount)
 	{
-		if (CanBuyCard)
+		actionOptions = HandleExtraOptions(possibleCardsAmount, actionIndex, CanBuyCard, GetPlayerOptions);
+		possibleCardsAmount = actionOptions.PossibleCards.size();
+
+		if (possibleCardsAmount <= 0)
 		{
-			bool hasBoughtACard = possibleCardsAmount + 1 == actionIndex;
-			if (hasBoughtACard)
-				BuyCardsForPlayer(1);
-			else
-				SayUno();
-		}
-		else
-			SayUno();
-
-		ShowCurrentDiscardCard();
-
-		actionOptions = GetPlayerOptions(false);
-
-		if (!CheckIfHasValidCard(actionOptions.PossibleCards.size()))
+			std::cout << "\nThere is no card to be discarded...\n";
 			return -1;
+		}
 
 		actionIndex = inputReader.GetPlayerAction(actionOptions.OptionsText, actionOptions.OptionsCount);
+
+		bool saidUnoAfterBuyingACard = actionIndex > possibleCardsAmount;
+		if (saidUnoAfterBuyingACard)
+		{
+			SayUno();
+			actionOptions = GetPlayerOptions(false);
+			actionIndex = inputReader.GetPlayerAction(actionOptions.OptionsText, actionOptions.OptionsCount);
+		}
 	}
 
 	return actionOptions.PossibleCards[actionIndex - 1].Id;
+}
+
+PlayerOptions Game::HandleExtraOptions(const int PossibleCardsAmount, const int ChosenActionIndex, const bool CanBuyCard,
+	const std::function<PlayerOptions(const bool)>& GetPlayerOptions)
+{
+	if (CanBuyCard && PossibleCardsAmount + 1 == ChosenActionIndex)
+	{
+		BuyCardsForPlayer(1);
+		playersController.SetPlayerUnoState(false, PlayerSelection::Current);
+	}
+	else
+		SayUno();
+
+	ShowCurrentDiscardCard();
+
+	return GetPlayerOptions(false);
 }
